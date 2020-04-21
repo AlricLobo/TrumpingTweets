@@ -1,4 +1,5 @@
-import os.path #used to check if a file exists in averageLength
+import os.path #used to check if a file exists in averageLength() and getIDF()
+import json    #used to write idf to file in getIDF()
 
 #Global variables for the BM25 input
 _bodyweight = 0.5
@@ -28,12 +29,17 @@ def averageLength(tweets):
 
     return avgLen
 
+def getIDF(tweets):
+    idf = {}
+
+    return
+
 
 def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k1, PRLambda = _PRLambda, PRLambdaP = _PRLambdaP):
     #get term frequencies for each document and normalize with weights, combining equation 2 and 3 in the handout
     avgLenOfAll = averageLength(tweets)
     w_dt = {}
-
+    docScores = {}
 
     for tweet in tweets:
         weightedTF = {}
