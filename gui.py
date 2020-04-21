@@ -11,8 +11,8 @@ e.pack()
 def myClick():
     query = e.get()
     print(query)
-    #data = get_data()
-    #print(data[1])
+    data = get_data()
+    print(data[1])
 myButton = Button(root, text = "Search", command = myClick)
 myButton.pack()
 

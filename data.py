@@ -7,7 +7,9 @@ def get_data():
 
         data = json.load(f)
 
+        for i in data:
 
+            i['text'] = i['text'].encode('ascii', 'ignore').decode('ascii')
         return data
 
 def get_query(q):
