@@ -15,8 +15,8 @@ def averageLength(tweets):
     #since it is unlikely we will have sets with the same number of tweets
 
     avgLen = -1
-    if os.path.isfile('tweets_' + str(tweets.length) + '.txt'):
-        f = open('tweets_' + str(tweets.length) + '.txt')
+    if os.path.isfile('tweets_avgLen_' + str(tweets.length) + '.txt'):
+        f = open('tweets_avgLen_' + str(tweets.length) + '.txt')
         avgLen = f.read()
     else:
         totLength = 0
@@ -25,28 +25,29 @@ def averageLength(tweets):
             words = tweet["text"].split()
             totLength += words.length
         avgLen = totLength / tweetCount
-        f = open('tweets_' + str(tweets.length) + '.txt', 'x')
+        f = open('tweets_avgLen_' + str(tweets.length) + '.txt', 'x')
         f.write(avgLen)
 
     return avgLen
 
-def getIDF(tweets,query):
+def getIDF(tweets):
     idf = {}
-    docfreq= {}
-    value = 0
-    for tweet in tweets:
-        tweet["text"] = tweet["text"].tolower()
-        words = tweet["text"].split()
 
-        for term in query:
-            if term in words:
-                value = value+1
-            docfreq[term] = value
-            value = 0
-            idf[term] = len(tweets)/docfreq[term]
-    file = open('tweets_idfs_' + str(tweets.length) + '.txt', 'x')
-    jsonVar = json.dump(idf)
-    file.write(jsonVar)
+    if os.path.isfile('tweets_idf_' + str(tweets.length) + '.txt'):
+        f = open('tweets_idf_' + str(tweets.length) + '.txt', 'r')
+        idf = json.load(f)
+    else:
+        for tweet in tweets:
+            words = tweet["text"].split()
+            for word in words:
+                if word not in idf:
+                    idf[word] = 0
+                idf[word] += 1
+        for word in idf:
+            idf[word] = math.log(idf[word])
+        f = open('tweets_idf_' + str(tweets.length) + '.txt', 'x')
+        f.write(json.dump(idf))
+    
     return idf
 
 def getNBestMatches(n, docScores):
@@ -62,7 +63,7 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
 
     #get term frequencies for each document and normalize with weights, combining equation 2 and 3 in the handout
     avgLenOfAll = averageLength(tweets)
-    allIDF = getIDF(tweets,query)
+    allIDF = getIDF(tweets)
     docScores = {}
 
     for tweet in tweets:
