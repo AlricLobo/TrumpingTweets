@@ -2,7 +2,6 @@ import os.path  #used to check if a file exists in averageLength() and getIDF()
 import json     #used to write idf to file in getIDF()
 import math     #used in getRankings to take the log of IDF and the lambda function
 import operator #used in getNBestMatches to sort the docScores and pick the best
-
 #Global variables for the BM25 input
 _bodyweight = 0.5
 _bbody = 0.5
@@ -31,9 +30,23 @@ def averageLength(tweets):
 
     return avgLen
 
-def getIDF(tweets):
+def getIDF(tweets,query):
     idf = {}
+    docfreq= {}
+    value = 0
+    for tweet in tweets:
+        tweet["text"] = tweet["text"].tolower()
+        words = tweet["text"].split()
 
+        for term in query:
+            if term in words:
+                value = value+1
+            docfreq[term] = value
+            value = 0
+            idf[term] = len(tweets)/docfreq[term]
+    file = open('tweets_idfs_' + str(tweets.length) + '.txt', 'x')
+    jsonVar = json.dump(idf)
+    file.write(jsonVar)
     return idf
 
 def getNBestMatches(n, docScores):
@@ -49,7 +62,7 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
 
     #get term frequencies for each document and normalize with weights, combining equation 2 and 3 in the handout
     avgLenOfAll = averageLength(tweets)
-    allIDF = getIDF(tweets)
+    allIDF = getIDF(tweets,query)
     docScores = {}
 
     for tweet in tweets:
