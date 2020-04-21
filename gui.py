@@ -12,7 +12,9 @@ def myClick():
     query = e.get()
     print(query)
     data = get_data()
-    print(data[1])
+    Len = len(data)
+
+    print(data[19])
 myButton = Button(root, text = "Search", command = myClick)
 myButton.pack()
 
