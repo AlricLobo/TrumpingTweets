@@ -1,5 +1,7 @@
-import os.path #used to check if a file exists in averageLength() and getIDF()
-import json    #used to write idf to file in getIDF()
+import os.path  #used to check if a file exists in averageLength() and getIDF()
+import json     #used to write idf to file in getIDF()
+import math     #used in getRankings to take the log of IDF and the lambda function
+import operator #used in getNBestMatches to sort the docScores and pick the best
 
 #Global variables for the BM25 input
 _bodyweight = 0.5
@@ -32,13 +34,22 @@ def averageLength(tweets):
 def getIDF(tweets):
     idf = {}
 
-    return
+    return idf
+
+def getNBestMatches(n, docScores):
+    bestMatches = sorted(docScores.items(), key=operator.itemgetter(1))
+    bestNMatches = bestMatches[-n:]
+    bestNMatches.reverse()
+    return bestNMatches
 
 
 def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k1, PRLambda = _PRLambda, PRLambdaP = _PRLambdaP):
+    #query is a list [], tweets is a dictionary defined in data.py, other arguments are used to tune performance
+    #function returns a list of tuples, first item is the tweet dictionary, second is the score (ordered best->worst)
+
     #get term frequencies for each document and normalize with weights, combining equation 2 and 3 in the handout
     avgLenOfAll = averageLength(tweets)
-    w_dt = {}
+    allIDF = getIDF(tweets)
     docScores = {}
 
     for tweet in tweets:
@@ -48,9 +59,19 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
             if word not in weightedTF:
                 weightedTF[word] = 0
             weightedTF[word] += 1
-        w_dt[tweet] = 0
         for word in weightedTF:
             weightedTF[word] = weightedTF[word] / ((1 - bbody) + bbody * (words.length / avgLenOfAll))
-            w_dt[tweet] += weightedTF[word] * bodyweight
+            weightedTF[word] += weightedTF[word] * bodyweight
+        docScores[tweet] = 0
+        for word in query:
+            if word in weightedTF[word]:
+                docScores[tweet] += (weightedTF[word] / (k1 + weightedTF)) * math.log(allIDF[word])
+                docScores[tweet] += PRLambda * math.log(docScores[tweet] + PRLambdaP)
 
-    return "test"
+    bestMatches = getNBestMatches(10, docScores)
+
+    #DEBUG
+    for item in bestMatches:
+        print(item[1])
+
+    return bestMatches
