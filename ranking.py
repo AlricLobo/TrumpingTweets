@@ -2,12 +2,17 @@ import os.path  #used to check if a file exists in averageLength() and getIDF()
 import json     #used to write idf to file in getIDF()
 import math     #used in getRankings to take the log of IDF and the lambda function
 import operator #used in getNBestMatches to sort the docScores and pick the best
+
 #Global variables for the BM25 input
 _bodyweight = 0.5
 _bbody = 0.5
 _k1 = 0.5
 _PRLambda = 0.5
 _PRLambdaP = 0.5
+
+#Additional glabal variables to weigh results by favorites and retweets
+_favs = 0.5
+_RTs = 0.5
 
 def averageLength(tweets):
     #to save time, the average length will be computed once per set of data
@@ -57,8 +62,18 @@ def getNBestMatches(n, docScores):
     bestNMatches.reverse()
     return bestNMatches
 
+def getMaxInteractions(tweets):
+    maxFav = 0
+    maxRT = 0
+    for tweet in tweets:
+        if tweet["favorite_count"] > maxFav:
+            maxFav = tweet["favorite_count"]
+        if tweet["retweet_count"] > maxRT:
+            maxRT = tweet["retweet_count"]
+    return (maxFav, maxRT)
 
-def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k1, PRLambda = _PRLambda, PRLambdaP = _PRLambdaP):
+
+def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k1, PRLambda = _PRLambda, PRLambdaP = _PRLambdaP, favs = _favs, RTs = _RTs):
     #query is a list [], tweets is a dictionary defined in data.py, other arguments are used to tune performance
     #function returns a list of tuples, first item is the tweet dictionary, second is the score (ordered best->worst)
 
@@ -66,6 +81,7 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
     avgLenOfAll = averageLength(tweets)
     allIDF = getIDF(tweets)
     docScores = {}
+    maxInteractions = getMaxInteractions(tweets)
 
     for tweet in tweets:
         weightedTF = {}
@@ -82,8 +98,14 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
             if word in weightedTF:
                 docScores[tweet["id_str"]] += (weightedTF[word] / (k1 + weightedTF[word])) * math.log(allIDF[word])
                 docScores[tweet["id_str"]] += PRLambda * math.log(docScores[tweet["id_str"]] + PRLambdaP)
+                #additional variables to adjust score by favorite and retweet counts
+                rtAndFavBonus = 1 + (.2 * favs * tweet["favorite_count"] / maxInteractions[0]) + (.5 * RTs * tweet["retweet_count"] / maxInteractions[1])
+                if(rtAndFavBonus > 1.5):
+                    print("Exceeded max")
+                    rtAndFavBonus = 1.5
+                docScores[tweet["id_str"]] *= rtAndFavBonus
 
-    bestMatchesID = getNBestMatches(10, docScores)
+    bestMatchesID = getNBestMatches(5, docScores)
     bestMatches = []
 
     for doc in bestMatchesID:
