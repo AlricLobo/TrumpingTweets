@@ -1,6 +1,7 @@
 from tkinter import*
 from data import *
 from ranking import *
+import os
 #TO-DO make the gui look nicer and more interactive
 #query is the term you search for
 
@@ -16,12 +17,22 @@ search_label.grid(row = 0, column = 0)
 #Label (e,image = photo1, bg = "white").grid(row=0,column = 0, sticky = W)
 
 data = get_data()
-Len = len(data)
 def myClick():
-
+    print("Cleaning up program from last execution")
+    cleanTxtFiles()
+    print("Beginning program")
     query = search.get()
-    search.delete(0,END)
+    search.delete(0, END)
     print(query)
+    query = get_query(query)
+    ranks = getRankings(query,data)
+
+    for doc in ranks:
+        print_records = str(doc[0]["text"]) + "\n" + "Doc score: " + str(doc[1]) + "\n\n"
+    print("Program finished")
+    print_label = Label(root, text=print_records)
+    print_label.grid(row=4, column = 0, columnspan = 4)
+
 
 
 
@@ -38,6 +49,7 @@ nextButton = Button(root, text = "Next", command = nextClick)
 nextButton.grid(row = 3, column = 3)
 prevButton = Button(root, text = "Prev", command = prevClick)
 prevButton.grid(row = 3, column = 2)
+
 #prevButton.pack()
 
 root.mainloop()
