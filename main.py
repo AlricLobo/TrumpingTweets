@@ -3,7 +3,7 @@ from ranking import *
 
 def main():
     print("Begining program")
-    queryS = input("Enter query")
+    queryS = raw_input("Enter query:\n")
     query = get_query(queryS)
     print("Query is: " + query + "\nGathering tweets")
     allTweets = get_data()
