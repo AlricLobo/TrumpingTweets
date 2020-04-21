@@ -56,10 +56,11 @@ def getIDF(tweets):
     
     return idf
 
-def getNBestMatches(n, docScores):
+def getNBestMatches(start,n, docScores):
     bestMatches = sorted(docScores.items(), key=operator.itemgetter(1))
-    bestNMatches = bestMatches[-n:]
-    bestNMatches.reverse()
+    bestMatches.reverse()
+    bestNMatches = bestMatches[start:start+n]
+    #bestNMatches.reverse()
     return bestNMatches
 
 def getMaxInteractions(tweets):
@@ -104,13 +105,40 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
                     print("Exceeded max")
                     rtAndFavBonus = 1.5
                 docScores[tweet["id_str"]] *= rtAndFavBonus
+                '''
+    if search == True:
+        searchMatchesID = getNBestMatches(start,5,docScores)
+        searchMatches = []
 
-    bestMatchesID = getNBestMatches(5, docScores)
-    bestMatches = []
+        for doc in searchMatchesID:
+            for tweet in tweets:
+                if doc[0] == tweet["id_str"]:
+                    searchMatches.append((tweet, doc[1]))
 
-    for doc in bestMatchesID:
+        return searchMatches
+
+        
+    else:
+        '''
+    
+    fullMatchesID = getNBestMatches(0,len(docScores),docScores)
+    fullMatches = []
+
+    for doc in fullMatchesID:
         for tweet in tweets:
             if doc[0] == tweet["id_str"]:
-                bestMatches.append((tweet, doc[1]))
+                fullMatches.append((tweet, doc[1]))
 
-    return bestMatches
+    return fullMatches
+
+    '''
+        bestMatchesID = getNBestMatches(0,5, docScores)
+        bestMatches = []
+
+        for doc in bestMatchesID:
+            for tweet in tweets:
+                if doc[0] == tweet["id_str"]:
+                    bestMatches.append((tweet, doc[1]))
+
+        return bestMatches
+    '''
