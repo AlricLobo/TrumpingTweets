@@ -3,9 +3,10 @@ from ranking import *
 
 def main():
     print("Begining program")
-    queryS = raw_input("Enter query:\n")
-    query = get_query(queryS)
-    print("Query is: " + query + "\nGathering tweets")
+    #queryS = raw_input("Enter query:\n")
+    #query = get_query(queryS)
+    query = ["china", "economy"]
+    print("Gathering tweets")
     allTweets = get_data()
     print("Tweets gathered\nGetting rankings")
     ranks = getRankings(query, allTweets)

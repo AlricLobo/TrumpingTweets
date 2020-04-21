@@ -15,17 +15,17 @@ def averageLength(tweets):
     #since it is unlikely we will have sets with the same number of tweets
 
     avgLen = -1
-    if os.path.isfile('tweets_avgLen_' + str(tweets.length) + '.txt'):
-        f = open('tweets_avgLen_' + str(tweets.length) + '.txt')
+    if os.path.isfile('tweets_avgLen_' + str(len(tweets)) + '.txt'):
+        f = open('tweets_avgLen_' + str(len(tweets)) + '.txt', 'r')
         avgLen = f.read()
     else:
         totLength = 0
-        tweetCount = tweets.length
+        tweetCount = len(tweets)
         for tweet in tweets:
             words = tweet["text"].split()
-            totLength += words.length
+            totLength += len(words)
         avgLen = totLength / tweetCount
-        f = open('tweets_avgLen_' + str(tweets.length) + '.txt', 'x')
+        f = open('tweets_avgLen_' + str(len(tweets)) + '.txt', 'w')
         f.write(avgLen)
 
     return avgLen
@@ -33,8 +33,8 @@ def averageLength(tweets):
 def getIDF(tweets):
     idf = {}
 
-    if os.path.isfile('tweets_idf_' + str(tweets.length) + '.txt'):
-        f = open('tweets_idf_' + str(tweets.length) + '.txt', 'r')
+    if os.path.isfile('tweets_idf_' + str(len(tweets)) + '.txt'):
+        f = open('tweets_idf_' + str(len(tweets)) + '.txt', 'r')
         idf = json.load(f)
     else:
         for tweet in tweets:
@@ -45,7 +45,7 @@ def getIDF(tweets):
                 idf[word] += 1
         for word in idf:
             idf[word] = math.log(idf[word])
-        f = open('tweets_idf_' + str(tweets.length) + '.txt', 'x')
+        f = open('tweets_idf_' + str(len(tweets)) + '.txt', 'w')
         f.write(json.dump(idf))
     
     return idf
@@ -74,7 +74,7 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
                 weightedTF[word] = 0
             weightedTF[word] += 1
         for word in weightedTF:
-            weightedTF[word] = weightedTF[word] / ((1 - bbody) + bbody * (words.length / avgLenOfAll))
+            weightedTF[word] = weightedTF[word] / ((1 - bbody) + bbody * (len(words) / avgLenOfAll))
             weightedTF[word] += weightedTF[word] * bodyweight
         docScores[tweet] = 0
         for word in query:
