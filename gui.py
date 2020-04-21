@@ -1,8 +1,17 @@
 from tkinter import*
 from data import *
 from ranking import *
+import os
 #TO-DO make the gui look nicer and more interactive
 #query is the term you search for
+def cleanTxtFiles():
+    #removes the test files generated while debugging
+    #remove call to this function when testing
+    filesInDir = os.listdir(os.curdir)
+    for file in filesInDir:
+        if file.endswith(".txt"):
+            print("Removing " + str(file))
+            os.remove(os.path.join(os.curdir, file))
 
 root = Tk()
 root.title('Trump Tweet Search')
@@ -16,12 +25,22 @@ search_label.grid(row = 0, column = 0)
 #Label (e,image = photo1, bg = "white").grid(row=0,column = 0, sticky = W)
 
 data = get_data()
-Len = len(data)
 def myClick():
-
+    print("Cleaning up program from last execution")
+    cleanTxtFiles()
+    print("Beginning program")
     query = search.get()
-    search.delete(0,END)
+    search.delete(0, END)
     print(query)
+    query = get_query(query)
+    ranks = getRankings(query,data)
+    print_records = ''
+    for doc in ranks:
+        print_records += str(doc[0]["text"]) + "\n" + "Doc score: " + str(doc[1]) + "\n\n"
+    print("Program finished")
+    print_label = Label(root, text=print_records)
+    print_label.grid(row=4, column = 0, columnspan = 4)
+
 
 
 
@@ -38,6 +57,7 @@ nextButton = Button(root, text = "Next", command = nextClick)
 nextButton.grid(row = 3, column = 3)
 prevButton = Button(root, text = "Prev", command = prevClick)
 prevButton.grid(row = 3, column = 2)
+
 #prevButton.pack()
 
 root.mainloop()
