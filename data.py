@@ -4,11 +4,23 @@ import codecs #used to load the data file with the proper encoding
 def get_data():
     #test file of 2020 tweets
     #TO-DO add and append the dictionary with every tweet since 2009
+    f = open('data_copy_utf8.json', 'r')
+    data = json.load(f)
+
+    for tweet in data:
+        if tweet["is_retweet"] == "true":
+            del data[tweet]
+        else:
+            tweet["text"] = tweet["text"].lower()
+    
+    return data
+    """
     with codecs.open('data.json', encoding = "utf8") as f:
         data = json.load(f)
         for i in data:
             i['text'] = i['text'].encode('ascii', 'ignore').decode('ascii')
         return data
+    """
 
 def get_query(q):
     queryWords = q.lower()

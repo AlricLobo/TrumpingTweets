@@ -17,7 +17,8 @@ def averageLength(tweets):
     avgLen = -1
     if os.path.isfile('tweets_avgLen_' + str(len(tweets)) + '.txt'):
         f = open('tweets_avgLen_' + str(len(tweets)) + '.txt', 'r')
-        avgLen = f.read()
+        avgLenS = f.read()
+        avgLen = map(int, avgLenS)
     else:
         totLength = 0
         tweetCount = len(tweets)
@@ -26,7 +27,7 @@ def averageLength(tweets):
             totLength += len(words)
         avgLen = totLength / tweetCount
         f = open('tweets_avgLen_' + str(len(tweets)) + '.txt', 'w')
-        f.write(avgLen)
+        f.write(str(avgLen))
 
     return avgLen
 
@@ -46,7 +47,7 @@ def getIDF(tweets):
         for word in idf:
             idf[word] = math.log(idf[word])
         f = open('tweets_idf_' + str(len(tweets)) + '.txt', 'w')
-        f.write(json.dump(idf))
+        json.dump(idf, f)
     
     return idf
 
@@ -76,16 +77,18 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
         for word in weightedTF:
             weightedTF[word] = weightedTF[word] / ((1 - bbody) + bbody * (len(words) / avgLenOfAll))
             weightedTF[word] += weightedTF[word] * bodyweight
-        docScores[tweet] = 0
+        docScores[tweet["id_str"]] = 0
         for word in query:
-            if word in weightedTF[word]:
-                docScores[tweet] += (weightedTF[word] / (k1 + weightedTF)) * math.log(allIDF[word])
-                docScores[tweet] += PRLambda * math.log(docScores[tweet] + PRLambdaP)
+            if word in weightedTF:
+                docScores[tweet["id_str"]] += (weightedTF[word] / (k1 + weightedTF[word])) * math.log(allIDF[word])
+                docScores[tweet["id_str"]] += PRLambda * math.log(docScores[tweet["id_str"]] + PRLambdaP)
 
-    bestMatches = getNBestMatches(10, docScores)
+    bestMatchesID = getNBestMatches(10, docScores)
+    bestMatches = []
 
-    #DEBUG
-    for item in bestMatches:
-        print(item[1])
+    for doc in bestMatchesID:
+        for tweet in tweets:
+            if doc[0] == tweet["id_str"]:
+                bestMatches.append((tweet, doc[1]))
 
     return bestMatches
