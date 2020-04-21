@@ -4,6 +4,14 @@ from ranking import *
 import os
 #TO-DO make the gui look nicer and more interactive
 #query is the term you search for
+def cleanTxtFiles():
+    #removes the test files generated while debugging
+    #remove call to this function when testing
+    filesInDir = os.listdir(os.curdir)
+    for file in filesInDir:
+        if file.endswith(".txt"):
+            print("Removing " + str(file))
+            os.remove(os.path.join(os.curdir, file))
 
 root = Tk()
 root.title('Trump Tweet Search')
@@ -26,9 +34,9 @@ def myClick():
     print(query)
     query = get_query(query)
     ranks = getRankings(query,data)
-
+    print_records = ''
     for doc in ranks:
-        print_records = str(doc[0]["text"]) + "\n" + "Doc score: " + str(doc[1]) + "\n\n"
+        print_records += str(doc[0]["text"]) + "\n" + "Doc score: " + str(doc[1]) + "\n\n"
     print("Program finished")
     print_label = Label(root, text=print_records)
     print_label.grid(row=4, column = 0, columnspan = 4)
