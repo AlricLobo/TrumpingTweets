@@ -44,10 +44,10 @@ def myClick():
     ranks = getRankings(query,data)
     searchRanks = ranks
     ranks = ranks[0:5]
-    
+    print(ranks[0])
     print_records = ''
     for doc in ranks:
-        print_records += str(doc[0]["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc[1]) + "\n\n"
+        print_records += str(doc[0]["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc[1]) + "\n" + "retweets: " + str(doc[0]["retweet_count"]) + "\n"+ "favorites: " + str(doc[0]["favorite_count"]) + "\n\n"
     print("Program finished")
     print_label['text'] = print_records
     
@@ -78,7 +78,7 @@ def nextClick():
     #stringNewLine = str(doc[0]["text"])
     #stringNewLine.replace('.','.\n')
     for doc in ranks:
-        print_records += str(doc[0]["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc[1]) + "\n\n"
+        print_records += str(doc[0]["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc[1]) + "\n" + "retweets: " + str(doc[0]["retweet_count"]) + "\n"+ "favorites: " + str(doc[0]["favorite_count"]) + "\n\n"
     print("Program finished")
     print_label['text'] = print_records
     
@@ -106,7 +106,7 @@ def prevClick():
     #stringNewLine = str(doc[0]["text"])
     #stringNewLine.replace('.','.\n')
     for doc in ranks:
-        print_records += str(doc[0]["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc[1]) + "\n\n"
+        print_records += str(doc[0]["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc[1]) + "\n" + "retweets: " + str(doc[0]["retweet_count"]) + "\n"+ "favorites: " + str(doc[0]["favorite_count"]) + "\n\n"
     print("Program finished")
     print_label['text'] = print_records
 searchButton = Button(root, text = "Search", command = myClick)
