@@ -21,12 +21,7 @@ def isEndTweet(text):
             return count
     return count
 
-def get_data():
-    #test file of 2020 tweets
-    #TO-DO add and append the dictionary with every tweet since 2009
-    f = open('data_copy_utf8.json', 'r')
-    data = json.load(f)
-
+def modifyData(data):
     stack = []
 
     #because tweets at the same time are in reverse order, we gotta fix it
@@ -36,7 +31,9 @@ def get_data():
     #lol, don't even ask how this works. I did it an hour ago and even I don't wanna comb through it
 
     for tweet in data[:]:
-        if tweet["text"][:4] == "RT @" or tweet["is_retweet"] == True:
+        if "is_retweet" not in tweet and tweet["text"][:4] == "RT @":
+            data.remove(tweet)
+        elif "is_retweet" in tweet and (tweet["text"][:4] == "RT @" or tweet["is_retweet"] == True):
             data.remove(tweet)
         else:
             tweet["text"] = tweet["text"].lower()
@@ -57,7 +54,8 @@ def get_data():
                 elif len(stack) > 0 and isEndTweet(tempTweet["text"]) >= 3:
                     while len(stack) > 0:
                         prevTweet = stack.pop()
-                        data.remove(prevTweet)
+                        if prevTweet in data:
+                            data.remove(prevTweet)
                         tempTweet["text"] = tempTweet["text"][:(-1 * isEndTweet(tempTweet["text"]))] + " " + prevTweet["text"][isStartTweet(prevTweet["text"]):]
                     data.append(tempTweet)
                 else:
@@ -78,6 +76,18 @@ def get_data():
                     stack.pop()
             lastTweet = tweet
 
+    #used to save data modifications to disk
+    """
+    f_out = open('allTweets_ready.json', 'w')
+    json.dump(data, f_out)
+    print("data done")
+    exit()
+    """
+
+def get_data():
+    #call modifyData if the dataset needs to be adjusted to the program
+    f = open('allTweets_ready.json', 'r')
+    data = json.load(f)
     return data
 
 def get_query(q):

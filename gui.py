@@ -34,8 +34,8 @@ print_label.pack(side = BOTTOM)
 
 data = get_data()
 def myClick():
-    print("Cleaning up program from last execution")
-    cleanTxtFiles()
+    #print("Cleaning up program from last execution")
+    #cleanTxtFiles()
     print("Beginning program")
     global searchRanks
     query = search.get()
