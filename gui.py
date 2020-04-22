@@ -7,6 +7,9 @@ import os
 
 start = 0
 searchRanks = []
+isFav = False
+isRel = True
+isRetweet = False
 favRanks = []
 retweetRanks = []
 def cleanTxtFiles():
@@ -49,38 +52,59 @@ drop = OptionMenu(searchFrame,clicked,*options)
 drop.grid(row = 1, column = 4)
 
 data = get_data()
+
+def printAns(rankArray, start, end):
+	print_records = ''
+	snippet = rankArray[start:end]
+	for doc in snippet:
+		print_records += str(doc[0]["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc[1]) + "\n" + "retweets: " + str(doc[0]["retweet_count"]) + "\n"+ "favorites: " + str(doc[0]["favorite_count"]) + "\n\n"
+	print("Program finished")
+	print_label['text'] = print_records
 def myClick():
     #print("Cleaning up program from last execution")
     #cleanTxtFiles()
     print("Beginning program")
     global searchRanks
+    global start
+    ranks = []
     query = search.get()
     search.delete(0, END)
     query = get_query(query)
-    ranks = getRankings(query,data)
-    if(clicked.get() == "Relevance"):
-    	searchRanks = ranks
-    elif(clicked.get() == "favorites"):
-    	for doc in ranks:
-    		if doc[1] > 0:
-    			favRanks.append(doc) 
-    	ranks = sorted(favRanks,key= lambda i: i[0]['favorite_count'],reverse = True)
-    	searchRanks = ranks
-    elif(clicked.get() == "retweets"):
-    	print("reached")
-    	for doc in ranks:
-    		if doc[1] > 0:
-    			retweetRanks.append(doc)
-    	ranks = sorted(retweetRanks,key= lambda i: i[0]['retweet_count'],reverse = True)
-    	searchRanks = ranks
+    if not query:
+    	print_label['text'] = "Please enter a Query"
+    else:    	
 
-    ranks = ranks[0:3]
-    print(ranks[0])
-    print_records = ''
-    for doc in ranks:
-        print_records += str(doc[0]["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc[1]) + "\n" + "retweets: " + str(doc[0]["retweet_count"]) + "\n"+ "favorites: " + str(doc[0]["favorite_count"]) + "\n\n"
-    print("Program finished")
-    print_label['text'] = print_records
+    	unRefRanks = getRankings(query,data)
+    
+    	for doc in unRefRanks:
+        	if doc[1] > 0:
+        		ranks.append(doc)                
+    	
+    	print(len(ranks))
+    	if(clicked.get() == "Relevance"):
+    		searchRanks = ranks
+    		isRel = True
+    		isFav = False
+    		isRetweet = False
+    	elif(clicked.get() == "favorites"):
+    		searchRanks = ranks
+    		ranks = sorted(ranks,key= lambda i: i[0]['favorite_count'],reverse = True)
+    		
+    		favRanks = ranks
+    		isRel = False
+    		isFav = True
+    		isRetweet = False
+    	elif(clicked.get() == "retweets"):
+    		print("reached")
+    		searchRanks = ranks
+    		ranks = sorted(ranks,key= lambda i: i[0]['retweet_count'],reverse = True)
+    		#searchRanks = ranks
+    		retweetRanks = ranks
+    		isRel = False
+    		isFav = False
+    		isRetweet = True
+    	start = 0
+    	printAns(ranks,0,3)
     
 
 
@@ -89,28 +113,27 @@ def myClick():
 
 def nextClick():
     global start
-    
+    global isFav
+    global isRel
+    global isRetweet
+    global favRanks
+    global retweetRanks
     start = start + 3
     if(start > len(searchRanks)):
     
     	start = len(searchRanks) - 3
-    
     end = start + 3
     if(end > len(searchRanks)):
-    
+    	start = len(searchRanks) - 3
     	end = len(searchRanks)
+    if(isRel == True):
+    	printAns(searchRanks,start,end)
+    elif isFav == True:
+    	printAns(favRanks,start,end)
+    elif isRetweet == True:
+    	printAns(retweetRanks,start,end)
+
     
-    ranks = searchRanks[start:end]
-    print(len(ranks))
-    print(len(searchRanks))
-    print_records = ''
-    stringNewLine = ''
-    #stringNewLine = str(doc[0]["text"])
-    #stringNewLine.replace('.','.\n')
-    for doc in ranks:
-        print_records += str(doc[0]["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc[1]) + "\n" + "retweets: " + str(doc[0]["retweet_count"]) + "\n"+ "favorites: " + str(doc[0]["favorite_count"]) + "\n\n"
-    print("Program finished")
-    print_label['text'] = print_records
     
 
 
@@ -125,44 +148,63 @@ def prevClick():
     
     end = start + 3
     if(end < 0):
-    
+    	start = 0
     	end = 3
     
     ranks = searchRanks[start:end]
     print(len(ranks))
     print(len(searchRanks))
-    print_records = ''
-    stringNewLine = ''
-    #stringNewLine = str(doc[0]["text"])
-    #stringNewLine.replace('.','.\n')
-    for doc in ranks:
-        print_records += str(doc[0]["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc[1]) + "\n" + "retweets: " + str(doc[0]["retweet_count"]) + "\n"+ "favorites: " + str(doc[0]["favorite_count"]) + "\n\n"
-    print("Program finished")
-    print_label['text'] = print_records
-    '''
+    if(end > len(searchRanks)):
+    
+    	end = len(searchRanks)
+    if(isRel == True):
+    	printAns(searchRanks,start,end)
+    elif isFav == True:
+    	printAns(favRanks,start,end)
+    elif isRetweet == True:
+    	printAns(retweetRanks,start,end)
+
+    
+    
 def updateClick():
 	ranks =[]
+	global start
+	global isFav
+	global isRel
+	global isRetweet
+	global favRanks
+	global retweetRanks
 	if(clicked.get() == "Relevance"):
+		isRel = True
+		isFav = False
+		isRetweet = False
 		if(len(searchRanks) != 0):
-			ranks =searchRanks
+			printAns(searchRanks,0,3)
 	elif(clicked.get() == "favorites"):
+		isRel = False
+		isFav = True
+		isRetweet = False
 		if(len(favRanks)!= 0):
-			ranks = favRanks
+			printAns(favRanks,0,3)
 		elif(len(favRanks) == 0 and len(searchRanks) != 0):
 			ranks = searchRanks 
 			ranks = sorted(ranks,key= lambda i: i[0]['favorite_count'],reverse = True)
+			favRanks = ranks
+			printAns(ranks,0,3)
 	elif(clicked.get() == "retweets"):
+		isRel = False
+		isFav = False
+		isRetweet = True
+		print("reached")
 		if(len(retweetRanks)!= 0):
-			ranks = retweetRanks
+			printAns(retweetRanks,0,3)
 		elif(len(retweetRanks) == 0 and len(searchRanks) != 0):
+			print("reached here")
 			ranks = searchRanks 
-			ranks = sorted(ranks,key= lambda i: i[0]['favorite_count'],reverse = True)
-	print_records = ''
-	for doc in ranks:
-		print_records += str(doc[0]["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc[1]) + "\n" + "retweets: " + str(doc[0]["retweet_count"]) + "\n"+ "favorites: " + str(doc[0]["favorite_count"]) + "\n\n"
-	print("Program finished")
-	print_label['text'] = print_records
-		'''
+			ranks = sorted(ranks,key= lambda i: i[0]['retweet_count'],reverse = True)
+			retweetRanks = ranks
+			printAns(ranks,0,3)
+	start = 0
 
 	
 searchButton = Button(searchFrame, text = "Search", command = myClick)
@@ -174,6 +216,6 @@ nextButton.grid(row = 3, column = 3)
 prevButton = Button(searchFrame, text = "Prev", command = prevClick,pady = 10, padx = 10)
 prevButton.grid(row = 3, column = 0)
 
-#updateButton = Button(searchFrame, text = "Update", command = updateClick,pady = 10, padx = 10)
-#updateButton.grid(row = 3, column = 4)
+updateButton = Button(searchFrame, text = "Update", command = updateClick,pady = 10, padx = 10)
+updateButton.grid(row = 3, column = 4)
 root.mainloop()
