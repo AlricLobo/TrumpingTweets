@@ -48,8 +48,6 @@ clicked.set(options[0])
 drop = OptionMenu(searchFrame,clicked,*options)
 drop.grid(row = 1, column = 4)
 
-def getFav(e):
-	return e[0]["favorite_count"]
 data = get_data()
 def myClick():
     print("Cleaning up program from last execution")
@@ -63,10 +61,17 @@ def myClick():
     if(clicked.get() == "Relevance"):
     	searchRanks = ranks
     elif(clicked.get() == "favorites"):
-    	ranks = sorted(ranks,key= lambda i: i[0]['favorite_count'],reverse = True)
+    	for doc in ranks:
+    		if doc[1] > 0:
+    			favRanks.append(doc) 
+    	ranks = sorted(favRanks,key= lambda i: i[0]['favorite_count'],reverse = True)
     	searchRanks = ranks
     elif(clicked.get() == "retweets"):
-    	ranks = sorted(ranks,key= lambda i: i[0]['retweet_count'],reverse = True)
+    	print("reached")
+    	for doc in ranks:
+    		if doc[1] > 0:
+    			retweetRanks.append(doc)
+    	ranks = sorted(retweetRanks,key= lambda i: i[0]['retweet_count'],reverse = True)
     	searchRanks = ranks
 
     ranks = ranks[0:3]
