@@ -141,4 +141,5 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
                     bestMatches.append((tweet, doc[1]))
 
         return bestMatches
-    '''
+
+   '''
