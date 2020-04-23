@@ -25,25 +25,17 @@ root = Tk()
 root.title('Trump Tweet Search')
 searchFrame = Frame(root)
 searchFrame.pack()
-#leftFrame = Frame(root, padx = 5, pady = 5)
-#leftFrame.pack(padx = 10, pady = 10)
-#rightFrame = Frame(root, padx = 5, pady = 5)
-#rightFrame.pack(padx = 10, pady = 10)
-answerFrame = Frame(root, padx = 5, pady = 5, relief = SUNKEN, bg = "grey",width = 10000, height = 700)
+answerFrame = Frame(root, padx = 5, pady = 5,  bg = "gray25",width = 10000, height = 700)
 answerFrame.pack()
 answerFrame.pack_propagate(False)
+searchFrame.pack_propagate(False)
 search = Entry(searchFrame,width = 50)
-#search.pack()
 search.grid(row = 0, column = 1, pady = 10, padx = 10, ipadx = 100)
 search_label = Label(searchFrame, text = "Query")
-#search_label.pack(side = LEFT)
 search_label.grid(row = 0, column = 0)
 
-print_label = Label(answerFrame, text= "Answers Displayed Here", font = ("Lucida Grande",10))
+print_label = Label(answerFrame, text= "Answers Displayed Here", font = ("Lucida Grande",10,"bold"), bg = "gray25" , fg = "white")
 print_label.pack()
-#print_label.grid(row=4, column = 0, columnspan = 4)
-#photo1 = PhotoImage(file = r"C:\Users\alric\Desktop\pa1-spring20\TrumpingTweets\gui_logo.GIF")
-#Label (e,image = photo1, bg = "white").grid(row=0,column = 0, sticky = W)
 options = ["Relevance", "favorites", "retweets"]
 
 clicked = StringVar()
@@ -57,7 +49,7 @@ def printAns(rankArray, start, end):
 	print_records = ''
 	snippet = rankArray[start:end]
 	for doc in snippet:
-		print_records += str(doc["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc["doc_score"]) + "\n" + "retweets: " + str(doc["retweet_count"]) + "\n"+ "favorites: " + str(doc["favorite_count"]) + "\n\n"
+		print_records += str(doc["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc["doc_score"]) + "\n" + "retweets: " + str(doc["retweet_count"]) + "\n"+ "favorites: " + str(doc["favorite_count"]) + "\n" + str(doc["created_at"]).replace("+0000","") + "\n\n"
 	print("Program finished")
 	print_label['text'] = print_records
 def myClick():
