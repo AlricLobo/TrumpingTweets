@@ -22,6 +22,10 @@ def isEndTweet(text):
             return count
     return count
 
+def cleanInput(text):
+    whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    return ''.join(filter(whitelist.__contains__, text))
+
 def modifyData(data):
     stack = []
 
@@ -88,9 +92,8 @@ def modifyData(data):
 
 def get_data():
     #call modifyData if the dataset needs to be adjusted to the program
-    f = open('allTweets_ready.json', 'r')
+    f = open('allTweets_ready3.json', 'r')
     data = json.load(f)
-    #modifyData(data)
     return data
 
 def get_query(q):

@@ -66,8 +66,6 @@ def getIDF(tweets, seconds):
                 if word not in idf:
                     idf[word] = 0
                 idf[word] += 1
-        for word in idf:
-            idf[word] = math.log(idf[word])
         f = open('tweets_idf_' + str(len(tweets)) + '.txt', 'w')
         json.dump(idf, f)
 
@@ -106,8 +104,8 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
             weightedTF[word] += weightedTF[word] * bodyweight
         tweet["doc_score"] = 0
         for word in query:
-            if word in weightedTF and allIDF[word] > 0:
-                tweet["doc_score"] += (weightedTF[word] / (k1 + weightedTF[word])) * math.log(allIDF[word])
+            if word in weightedTF:
+                tweet["doc_score"] += (weightedTF[word] / (k1 + weightedTF[word])) * math.log(allIDF[word] + 1)
                 tweet["doc_score"] += PRLambda * math.log(tweet["doc_score"] + PRLambdaP)
                 #additional variables to adjust score by favorite and retweet counts
                 rtAndFavBonus = 1 + (.2 * favs * tweet["favorite_count"] / md[1]) + (.5 * RTs * tweet["retweet_count"] / md[2])

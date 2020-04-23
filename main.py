@@ -42,14 +42,16 @@ def main():
 
     userRanking = []    #to be used to calc NDCG
 
-    """for doc in topDocs:
+    for doc in topDocs:
+        if doc["doc_score"] == 0:
+            continue
         print(doc["text"])
         print(doc["doc_score"])
         print(doc["retweet_count"])
         print(doc["favorite_count"])
         print(doc["created_at"])
         print("\n\n")
-    exit()"""
+    exit()
 
     #Get user ranking [0-3] for the randomized top numResults
     for doc in randTopDocs:
