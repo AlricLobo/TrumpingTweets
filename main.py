@@ -16,6 +16,8 @@ def cleanTxtFiles():
             os.remove(os.path.join(os.curdir, file))
 
 def DCGScore(relScores):
+    #Returns the DCG scores from a list of relevancy scores
+    #This scores will be normalized later
     dcgScore = 0
     count = 2
     for i in relScores:
@@ -24,10 +26,9 @@ def DCGScore(relScores):
     return dcgScore
 
 def main():
+    #This program is used for rapid testing and output adjustment
+    #The proper GUI is to be used by the users, not this
     numResults = 10
-
-    #print("Cleaning up program from last execution")
-    #cleanTxtFiles()
     print("Begining program")
     print("Gathering tweets")
     allTweets = get_data()

@@ -23,6 +23,7 @@ def isEndTweet(text):
     return count
 
 def cleanInput(text):
+    #removes all non-letters from the input, helps to make sure words are properly accounted for
     whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ')
     return ''.join(filter(whitelist.__contains__, text))
 
@@ -97,6 +98,7 @@ def get_data():
     return data
 
 def get_query(q):
+    #takes the query input from the user and returns a list, used in testing/debugging
     queryWords = q.lower()
     queryWords = queryWords.split()
 

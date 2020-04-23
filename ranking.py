@@ -16,6 +16,9 @@ _favs = 0.1
 _RTs = 0.24
 
 
+#Most functions here have a time argument, that was used to measure performance time with varying optimizations
+
+
 def getMetadata(tweets, seconds):
     #to save time, the average length will be computed once per set of data
     #it will then be saved to a text document with the name "tweets_#ofTweets"
@@ -28,7 +31,6 @@ def getMetadata(tweets, seconds):
         f = open('tweets_metadata_' + str(len(tweets)) + '.txt', 'r')
         mdS = json.load(f)
         md = {0: float(mdS["0"]), 1: float(mdS["1"]), 2: float(mdS["2"]), }
-        #avgLen = float(avgLenS)
     else:
         totLength = 0
         maxFav = 0
@@ -52,6 +54,8 @@ def getMetadata(tweets, seconds):
     return md
 
 def getIDF(tweets, seconds):
+    #Similar goal as above, will automatically save/load IDF for an archive
+    #if it exists. Will generate it if the file doesn't exist
     seconds = time.time()
     print("Getting tweet IDF: " + str(time.time() - seconds))
     idf = {}
@@ -74,6 +78,7 @@ def getIDF(tweets, seconds):
     return idf
 
 def getBestMatches(tweets, seconds):
+    #Sorts the list of tweets by highest score
     print("Starting best matches: " + str(time.time() - seconds))
     bestMatches = sorted(tweets, key = lambda i: i["doc_score"])
     bestMatches.reverse()
