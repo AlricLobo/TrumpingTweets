@@ -23,7 +23,7 @@ def averageLength(tweets):
     if os.path.isfile('tweets_avgLen_' + str(len(tweets)) + '.txt'):
         f = open('tweets_avgLen_' + str(len(tweets)) + '.txt', 'r')
         avgLenS = f.read()
-        avgLen = map(int, avgLenS)
+        avgLen = float(avgLenS)
     else:
         totLength = 0
         tweetCount = len(tweets)
