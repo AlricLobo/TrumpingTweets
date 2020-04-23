@@ -13,8 +13,8 @@ def cleanTxtFiles():
             os.remove(os.path.join(os.curdir, file))
 
 def main():
-    print("Cleaning up program from last execution")
-    cleanTxtFiles()
+    #print("Cleaning up program from last execution")
+    #cleanTxtFiles()
     print("Begining program")
     queryS = input("Enter query:\n")
     query = get_query(queryS)
@@ -23,8 +23,8 @@ def main():
     print("Tweets gathered\nGetting rankings")
     ranks = getRankings(query, allTweets)
     print("Top results: ")
-    for doc in ranks:
-        print(str(doc[0]["text"]) + "\n" + "Doc score: " + str(doc[1]) + "\n\n")
+    for doc in ranks[:10]:
+        print(str(doc["text"]) + "\n" + "Doc score: " + str(doc["doc_score"]) + "\n\n")
     print("Program finished")
 
 

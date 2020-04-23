@@ -1,5 +1,6 @@
 import json   #used to load the tweets into a dictionary
 import codecs #used to load the data file with the proper encoding
+import string #used to remove punctuation from tweet
 
 def isStartTweet(text):
     #how many . does the tweet start with? i.e. ...and then I said
@@ -75,19 +76,21 @@ def modifyData(data):
                 while len(stack) > 0:
                     stack.pop()
             lastTweet = tweet
+    
+    for tweet in data:
+        tweet["text"] = tweet["text"].translate(tweet["text"].maketrans('', '', string.punctuation))
 
     #used to save data modifications to disk
-    """
-    f_out = open('allTweets_ready.json', 'w')
+    f_out = open('allTweets_ready2.json', 'w')
     json.dump(data, f_out)
     print("data done")
     exit()
-    """
 
 def get_data():
     #call modifyData if the dataset needs to be adjusted to the program
     f = open('allTweets_ready.json', 'r')
     data = json.load(f)
+    #modifyData(data)
     return data
 
 def get_query(q):

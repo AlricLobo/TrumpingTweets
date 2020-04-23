@@ -27,7 +27,7 @@ def getMetadata(tweets, seconds):
     if os.path.isfile('tweets_metadata_' + str(len(tweets)) + '.txt'):
         f = open('tweets_metadata_' + str(len(tweets)) + '.txt', 'r')
         mdS = json.load(f)
-        md = {0: float(mdS[0]), 1: float(mdS[1]), 2: float(mdS[2]), }
+        md = {0: float(mdS["0"]), 1: float(mdS["1"]), 2: float(mdS["2"]), }
         #avgLen = float(avgLenS)
     else:
         totLength = 0
@@ -75,9 +75,9 @@ def getIDF(tweets, seconds):
     
     return idf
 
-def getBestMatches(docScores, seconds):
+def getBestMatches(tweets, seconds):
     print("Starting best matches: " + str(time.time() - seconds))
-    bestMatches = sorted(docScores.items(), key=operator.itemgetter(1))
+    bestMatches = sorted(tweets, key = lambda i: i["doc_score"])
     bestMatches.reverse()
     print("Finishing best matches: " + str(time.time() - seconds))
     return bestMatches
@@ -91,7 +91,6 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
     #get term frequencies for each document and normalize with weights, combining equation 2 and 3 in the handout
     md = getMetadata(tweets, seconds)
     allIDF = getIDF(tweets, seconds)
-    docScores = {}
 
     print("Starting rankings algorithm: " + str(time.time() - seconds))
 
@@ -105,27 +104,19 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
         for word in weightedTF:
             weightedTF[word] = weightedTF[word] / ((1 - bbody) + bbody * (len(words) / md[0]))
             weightedTF[word] += weightedTF[word] * bodyweight
-        docScores[tweet["id_str"]] = 0
+        tweet["doc_score"] = 0
         for word in query:
             if word in weightedTF:
-                docScores[tweet["id_str"]] += (weightedTF[word] / (k1 + weightedTF[word])) * math.log(allIDF[word])
-                docScores[tweet["id_str"]] += PRLambda * math.log(docScores[tweet["id_str"]] + PRLambdaP)
+                tweet["doc_score"] += (weightedTF[word] / (k1 + weightedTF[word])) * math.log(allIDF[word])
+                tweet["doc_score"] += PRLambda * math.log(tweet["doc_score"] + PRLambdaP)
                 #additional variables to adjust score by favorite and retweet counts
                 rtAndFavBonus = 1 + (.2 * favs * tweet["favorite_count"] / md[1]) + (.5 * RTs * tweet["retweet_count"] / md[2])
                 if(rtAndFavBonus > 1.5):
                     print("Exceeded max")
                     rtAndFavBonus = 1.5
-                docScores[tweet["id_str"]] *= rtAndFavBonus
+                tweet["doc_score"] *= rtAndFavBonus
     print("Finishing rankings algorithm: " + str(time.time() - seconds))
     
-    fullMatchesID = getBestMatches(docScores, seconds)
-    fullMatches = []
-
-    print("Starting ordering of tweets: " + str(time.time() - seconds))
-    for doc in fullMatchesID:
-        for tweet in tweets:
-            if doc[0] == tweet["id_str"]:
-                fullMatches.append((tweet, doc[1]))
-    print("Finishing ordering of tweets: " + str(time.time() - seconds))
+    fullMatches = getBestMatches(tweets, seconds)
 
     return fullMatches

@@ -57,7 +57,7 @@ def printAns(rankArray, start, end):
 	print_records = ''
 	snippet = rankArray[start:end]
 	for doc in snippet:
-		print_records += str(doc[0]["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc[1]) + "\n" + "retweets: " + str(doc[0]["retweet_count"]) + "\n"+ "favorites: " + str(doc[0]["favorite_count"]) + "\n\n"
+		print_records += str(doc["text"]).replace('. ','.\n') + "\n" + "Doc score: " + str(doc["doc_score"]) + "\n" + "retweets: " + str(doc["retweet_count"]) + "\n"+ "favorites: " + str(doc["favorite_count"]) + "\n\n"
 	print("Program finished")
 	print_label['text'] = print_records
 def myClick():
@@ -77,7 +77,7 @@ def myClick():
     	unRefRanks = getRankings(query,data)
     
     	for doc in unRefRanks:
-        	if doc[1] > 0:
+        	if doc["doc_score"] > 0:
         		ranks.append(doc)                
     	
     	print(len(ranks))
@@ -88,7 +88,7 @@ def myClick():
     		isRetweet = False
     	elif(clicked.get() == "favorites"):
     		searchRanks = ranks
-    		ranks = sorted(ranks,key= lambda i: i[0]['favorite_count'],reverse = True)
+    		ranks = sorted(ranks,key= lambda i: i['favorite_count'],reverse = True)
     		
     		favRanks = ranks
     		isRel = False
@@ -97,7 +97,7 @@ def myClick():
     	elif(clicked.get() == "retweets"):
     		print("reached")
     		searchRanks = ranks
-    		ranks = sorted(ranks,key= lambda i: i[0]['retweet_count'],reverse = True)
+    		ranks = sorted(ranks,key= lambda i: i['retweet_count'],reverse = True)
     		#searchRanks = ranks
     		retweetRanks = ranks
     		isRel = False
@@ -188,7 +188,7 @@ def updateClick():
 			printAns(favRanks,0,3)
 		elif(len(favRanks) == 0 and len(searchRanks) != 0):
 			ranks = searchRanks 
-			ranks = sorted(ranks,key= lambda i: i[0]['favorite_count'],reverse = True)
+			ranks = sorted(ranks,key= lambda i: i['favorite_count'],reverse = True)
 			favRanks = ranks
 			printAns(ranks,0,3)
 	elif(clicked.get() == "retweets"):
@@ -201,7 +201,7 @@ def updateClick():
 		elif(len(retweetRanks) == 0 and len(searchRanks) != 0):
 			print("reached here")
 			ranks = searchRanks 
-			ranks = sorted(ranks,key= lambda i: i[0]['retweet_count'],reverse = True)
+			ranks = sorted(ranks,key= lambda i: i['retweet_count'],reverse = True)
 			retweetRanks = ranks
 			printAns(ranks,0,3)
 	start = 0
