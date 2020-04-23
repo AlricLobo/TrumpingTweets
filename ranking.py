@@ -5,15 +5,15 @@ import operator #used in getNBestMatches to sort the docScores and pick the best
 import time     #used for debugging slow program
 
 #Global variables for the BM25 input
-_bodyweight = 0.5
-_bbody = 0.5
-_k1 = 0.5
-_PRLambda = 0.5
-_PRLambdaP = 0.5
+_bodyweight = 0.62
+_bbody = 0.45
+_k1 = 0.4
+_PRLambda = 0.86
+_PRLambdaP = 0.35
 
 #Additional glabal variables to weigh results by favorites and retweets
-_favs = 0.5
-_RTs = 0.5
+_favs = 0.1
+_RTs = 0.24
 
 
 def getMetadata(tweets, seconds):
@@ -106,7 +106,7 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
             weightedTF[word] += weightedTF[word] * bodyweight
         tweet["doc_score"] = 0
         for word in query:
-            if word in weightedTF:
+            if word in weightedTF and allIDF[word] > 0:
                 tweet["doc_score"] += (weightedTF[word] / (k1 + weightedTF[word])) * math.log(allIDF[word])
                 tweet["doc_score"] += PRLambda * math.log(tweet["doc_score"] + PRLambdaP)
                 #additional variables to adjust score by favorite and retweet counts
