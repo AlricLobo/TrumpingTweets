@@ -24,7 +24,7 @@ def isEndTweet(text):
 
 def cleanInput(text):
     #removes all non-letters from the input, helps to make sure words are properly accounted for
-    whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ.')
+    whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ')
     return ''.join(filter(whitelist.__contains__, text))
 
 def modifyData(data):
@@ -93,7 +93,7 @@ def modifyData(data):
 
 def get_data():
     #call modifyData if the dataset needs to be adjusted to the program
-    f = open('allTweets_ready3.json', 'r')
+    f = open('allTweets_ready.json', 'r')
     data = json.load(f)
     return data
 

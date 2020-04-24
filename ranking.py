@@ -3,6 +3,7 @@ import json     #used to write idf to file in getIDF()
 import math     #used in getRankings to take the log of IDF and the lambda function
 import operator #used in getNBestMatches to sort the docScores and pick the best
 import time     #used for debugging slow program
+import string   #used to remove punctuation in getIDF and getRankings
 
 #Global variables for the BM25 input
 _bodyweight = 0.62
@@ -54,6 +55,8 @@ def getMetadata(tweets, seconds):
     return md
 
 def getIDF(tweets, seconds):
+    whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+
     #Similar goal as above, will automatically save/load IDF for an archive
     #if it exists. Will generate it if the file doesn't exist
     seconds = time.time()
@@ -67,9 +70,10 @@ def getIDF(tweets, seconds):
         for tweet in tweets:
             words = tweet["text"].split()
             for word in words:
-                if word not in idf:
-                    idf[word] = 0
-                idf[word] += 1
+                tempWord = ''.join(filter(whitelist.__contains__, word))
+                if tempWord not in idf:
+                    idf[tempWord] = 0
+                idf[tempWord] += 1
         f = open('tweets_idf_' + str(len(tweets)) + '.txt', 'w')
         json.dump(idf, f)
 
@@ -91,6 +95,8 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
 
     seconds = time.time()
 
+    whitelist = set('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+
     #get term frequencies for each document and normalize with weights, combining equation 2 and 3 in the handout
     md = getMetadata(tweets, seconds)
     allIDF = getIDF(tweets, seconds)
@@ -101,16 +107,18 @@ def getRankings(query, tweets, bodyweight = _bodyweight, bbody = _bbody, k1 = _k
         weightedTF = {}
         words = tweet["text"].split()
         for word in words:
-            if word not in weightedTF:
-                weightedTF[word] = 0
-            weightedTF[word] += 1
+            tempWord = ''.join(filter(whitelist.__contains__, word))
+            if tempWord not in weightedTF:
+                weightedTF[tempWord] = 0
+            weightedTF[tempWord] += 1
         for word in weightedTF:
             weightedTF[word] = weightedTF[word] / ((1 - bbody) + bbody * (len(words) / md[0]))
             weightedTF[word] += weightedTF[word] * bodyweight
         tweet["doc_score"] = 0
         for word in query:
-            if word in weightedTF:
-                tweet["doc_score"] += (weightedTF[word] / (k1 + weightedTF[word])) * math.log(allIDF[word] + 1)
+            tempWord = ''.join(filter(whitelist.__contains__, word))
+            if tempWord in weightedTF:
+                tweet["doc_score"] += (weightedTF[tempWord] / (k1 + weightedTF[tempWord])) * math.log(allIDF[tempWord] + 1)
                 tweet["doc_score"] += PRLambda * math.log(tweet["doc_score"] + PRLambdaP)
                 #additional variables to adjust score by favorite and retweet counts
                 rtAndFavBonus = 1 + (.2 * favs * tweet["favorite_count"] / md[1]) + (.5 * RTs * tweet["retweet_count"] / md[2])
